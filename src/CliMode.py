@@ -8,7 +8,7 @@
 import argparse
 from os import walk
 from os.path import join, isdir
-from MusicMaker import check_files, get_factions, make_music_file, make_all_file, make_faction_file
+from MusicMaker import check_files, get_factions, make_music_file, make_all_file, make_faction_file, remove_unwanted
 
 
 def main(args):
@@ -20,13 +20,13 @@ def main(args):
         print("This mod does not have the folders to make the operation possible.")
         return 1
     check_files(mod_location)
-    faction_list = sorted(set(next(walk(sound_location))[1]))
+    faction_list = remove_unwanted(sorted(set(next(walk(sound_location))[1])))
     all_faction = sorted(
         set(faction_list[1:] + get_factions(args.faction) + args.name))
 
     make_music_file(sound_location, mod_location)
     for k in faction_list:
-        if (k == "00"):
+        if k == "00":
             print(f"All Factions have:")
             make_all_file(sound_location, mod_location, all_faction, args.only)
         else:

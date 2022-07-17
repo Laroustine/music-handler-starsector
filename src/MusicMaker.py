@@ -22,14 +22,13 @@ BASE_FACTION = [
     "luddic_church",
     "luddic_path",
     "persean_league",
-    "derelict",
     "remnants",
     "omega",
-    "scavengers",
-    "sleeper",
-    "mercenary"
 ]
 
+UNWANTED_FACTION = [
+    "simulation_ost",
+]
 
 def make_file_entry(location: str, faction: str, mtype: str):
     entry_data = {"source": join("sounds/music/cbm", join(faction, mtype)),
@@ -43,11 +42,14 @@ def make_music_info(location: str):
     music_data = {"music": {}}
 
     for faction in sorted(next(walk(join(location, "")))[1]):
-        for mtype in next(walk(join(location, faction)))[1]:
-            music_data["music"][f"{faction}_{mtype}"] = make_file_entry(
-                join(location, faction), faction, mtype)
+        if faction == "simulation_ost":
+            music_data["music"]["simulation_ost"] = make_file_entry(
+                    join(location, faction), faction, "")
+        else:
+            for mtype in next(walk(join(location, faction)))[1]:
+                music_data["music"][f"{faction}_{mtype}"] = make_file_entry(
+                    join(location, faction), faction, mtype)
     return music_data
-
 
 def make_music_file(location: str, location_current: str):
     print("Sounds File in progress")
@@ -112,6 +114,11 @@ def check_files(location):
     if (not isdir(join(location, "data/world/factions"))):
         makedirs(join(location, "data/world/factions"))
 
+def remove_unwanted(factions: list):
+    for k in UNWANTED_FACTION:
+        if k in factions:
+            factions.remove(k)
+    return factions
 
 def get_factions(file_list: list):
     result = []
