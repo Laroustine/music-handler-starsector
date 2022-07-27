@@ -38,9 +38,7 @@ def make_file_entry(location: str, faction: str, mtype: str):
     return [entry_data]
 
 
-def make_music_info(location: str):
-    music_data = {"music": {}}
-
+def make_music_info(location: str, music_data: object = {"music": {}}):
     for faction in sorted(next(walk(join(location, "")))[1]):
         if faction == "simulation_ost":
             music_data["music"]["simulation_ost"] = make_file_entry(
@@ -53,8 +51,14 @@ def make_music_info(location: str):
 
 def make_music_file(location: str, location_current: str):
     print("Sounds File in progress")
-    with open(f"{join(location_current, 'data/config/sounds.json')}", mode="w") as json_file:
-        json.dump(make_music_info(location), json_file, indent=4)
+    if isfile(f"{join(location_current, 'data/config/sounds.json')}"):
+        with open(f"{join(location_current, 'data/config/sounds.json')}", mode="r+") as json_file:
+            data = json.load(json_file)
+            json_file.seek(0)
+            json.dump(make_music_info(location, data), json_file, indent=4)
+    else:
+        with open(f"{join(location_current, 'data/config/sounds.json')}", mode="w") as json_file:
+            json.dump(make_music_info(location), json_file, indent=4)
     print("Sounds File done")
 
 
